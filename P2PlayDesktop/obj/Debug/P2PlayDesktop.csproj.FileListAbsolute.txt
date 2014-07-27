@@ -1,0 +1,9 @@
+c:\users\projectbuilder\documents\visual studio 2013\Projects\P2PlayDesktop\P2PlayDesktop\bin\Debug\P2PlayDesktop.exe.config
+C:\Users\ProjectBuilder\documents\visual studio 2013\Projects\P2PlayDesktop\P2PlayDesktop\bin\Debug\P2PlayDesktop.exe
+C:\Users\ProjectBuilder\documents\visual studio 2013\Projects\P2PlayDesktop\P2PlayDesktop\bin\Debug\P2PlayDesktop.pdb
+C:\Users\ProjectBuilder\documents\visual studio 2013\Projects\P2PlayDesktop\P2PlayDesktop\obj\Debug\P2PlayDesktop.csprojResolveAssemblyReference.cache
+C:\Users\ProjectBuilder\documents\visual studio 2013\Projects\P2PlayDesktop\P2PlayDesktop\obj\Debug\P2PlayDesktop.Form1.resources
+C:\Users\ProjectBuilder\documents\visual studio 2013\Projects\P2PlayDesktop\P2PlayDesktop\obj\Debug\P2PlayDesktop.Properties.Resources.resources
+C:\Users\ProjectBuilder\documents\visual studio 2013\Projects\P2PlayDesktop\P2PlayDesktop\obj\Debug\P2PlayDesktop.csproj.GenerateResource.Cache
+C:\Users\ProjectBuilder\documents\visual studio 2013\Projects\P2PlayDesktop\P2PlayDesktop\obj\Debug\P2PlayDesktop.exe
+C:\Users\ProjectBuilder\documents\visual studio 2013\Projects\P2PlayDesktop\P2PlayDesktop\obj\Debug\P2PlayDesktop.pdb
