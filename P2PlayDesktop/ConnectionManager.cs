@@ -23,11 +23,15 @@ namespace P2PlayDesktop
     class ConnectionManager
     {
         private const int listenPort = 5365;
+        private const int GID1 = 9; // 9 => 1001
+        private const int GID2 = 5; // 5 => 0101
+        private const int REQUEST_CONNECT = 0;
+
         private UdpClient listener;
         private IPEndPoint ep;
 
-        private Dictionary<string, string> clients; // key = username, value = IP as string
-        private Dictionary<int, string> ports; // key = port, value = username;
+        private Dictionary<string, string> ips; // key = username, value = IP as string
+        private Dictionary<string, int> ports; // key = port, value = username;
         private List<UDPListener> clientListeners;
 
         private Form1 main;
@@ -35,8 +39,8 @@ namespace P2PlayDesktop
         public ConnectionManager(Form1 f)
         {
             main = f;
-            clients = new Dictionary<string, string>();
-            ports = new Dictionary<int, string>();
+            ips = new Dictionary<string, string>();
+            ports = new Dictionary<string, int>();
             clientListeners = new List<UDPListener>();
             setUpConnection();
         }
@@ -50,7 +54,7 @@ namespace P2PlayDesktop
 
         private void beginListening()
         {
-            main.Log("[CM] Starting to listen..");
+            Console.WriteLine("[CM] Starting to listen..");
             listener.BeginReceive(new AsyncCallback(handleReceive), null);
         }
 
@@ -59,7 +63,7 @@ namespace P2PlayDesktop
             try
             {
                 Byte[] data = listener.EndReceive(ar, ref ep);
-                handleConnectionRequest(data, ep);
+                handleData(data, ep);
                 beginListening();
             }
             catch (ObjectDisposedException e) 
@@ -68,32 +72,78 @@ namespace P2PlayDesktop
             }
         }
 
-        private void handleConnectionRequest(Byte[] data, IPEndPoint ep)
+        private void handleData(Byte[] data, IPEndPoint ep)
         {
-            string username = Encoding.ASCII.GetString(data);
-
-            if (clients.ContainsKey(username))
+            if (data[0] == GID1 && data[1] == GID2)
             {
-                // username already exists
-                // check
-                // refuse connection
-                main.Log("[CM] Username already in use / Client already connected?");
+                int request = data[2];
+
+                switch (request)
+                {
+                    case REQUEST_CONNECT:
+                        handleConnectionRequest(data, ep);
+                        break;
+                }
+            }
+            else
+            {
+                // Ignore
+            }
+            
+
+            string d = Encoding.ASCII.GetString(data);
+
+
+
+            // TODO: call handleConnectionRequest(username) if request = "connect"
+
+            // TODO: handle erroneous request 
+            // Create custom error class?
+            // Throw custom error: invalidRequest ?
+        }
+
+        private void handleConnectionRequest(byte[] data, IPEndPoint ep)
+        {
+            string username = "";
+            for (int i = 3; i < data.Length; i++)
+            {
+                byte[] payload = data; // TODO: get only payload from data
+                username += Encoding.ASCII.GetString(payload);
+            }
+
+            if (ips.ContainsKey(username))
+            {
+                // username already exists in userlist
+                // if same IP => reconnecting user
+                //            => give him same port as last connection
+                if (ips[username] == ep.Address.ToString())
+                {
+                    ports[username];
+
+                    // TODO: Send him to another port
+                }
+                else
+                {
+                    // if different IP => duplicate username
+                    //                 => refuse connection
+                    Console.WriteLine("[CM] Username already in use / Client already connected?");
+                }
             }
             else
             {
                 // add username and link to IP
                 if (getNextFreePort() != -1)
                 {
-                    clients.Add(username, ep.Address.ToString());
-                    main.Log("[CM] Added username: " + username);
-                    main.Log("[CM] Using port: " + getNextFreePort().ToString());
+                    ips.Add(username, ep.Address.ToString());
+                    Console.WriteLine("[CM] Added username: " + username);
+                    Console.WriteLine("[CM] Using port: " + getNextFreePort().ToString());
                     clientListeners.Add(new UDPListener(main, getNextFreePort()));
-                    ports.Add(getNextFreePort(), username);
+                    ports.Add(username, getNextFreePort());
                 }
                 else
                 {
                     // refuse client due to ports full
-                    main.Log("[CM] Server is full, please try again later.");
+                    Console.WriteLine("[CM] Server is full, please try again later.");
                 }
             }
         }
@@ -103,7 +153,7 @@ namespace P2PlayDesktop
         {
             for (int i = 5366; i < 5396; i++)
             {
-                if (!ports.ContainsKey(i))
+                if (!ports.ContainsValue(i))
                 {
                     return i;
                 }
